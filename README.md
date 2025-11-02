@@ -4,6 +4,8 @@
 [![Made with Next.js](https://img.shields.io/badge/Built%20with-Next.js-black)](https://nextjs.org/)
 [![Powered by pnpm](https://img.shields.io/badge/Package%20Manager-pnpm-orange)](https://pnpm.io/)
 
+**English** | [中文](https://github.com/luoxue3943/TransAvatarFlagAdder/blob/master/README_zh.md)
+
 ---
 
 A small tool for quickly adding the **「Narutomaki Trans Flag」** effect to avatars.
