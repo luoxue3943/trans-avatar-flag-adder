@@ -1,4 +1,4 @@
-# 头像添加鱼板跨旗工具 🏳️‍⚧️🍥
+# Avatar Narutomaki Trans Flag Adder Tool 🏳️‍⚧️🍥
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Made with Next.js](https://img.shields.io/badge/Built%20with-Next.js-black)](https://nextjs.org/)
@@ -6,68 +6,74 @@
 
 ---
 
-一款用于为头像快速添加 **「Narutomaki Trans Flag」（鱼板跨旗）** 效果的小工具。  
-支持 **实时预览**、**原始分辨率下载**，轻量且即开即用。
+A small tool for quickly adding the **「Narutomaki Trans Flag」** effect to avatars.
+Supports **Live Preview, Original Resolution Download**, and is lightweight and ready to use.
 
 ---
 
-## 💻 在线体验
+## 💻 Try it Online
 
-👉 直接访问：<https://transflag.luoxue.cc>
-
----
-
-## ✨ 功能特点
-
-- 保持原始分辨率导出，清晰不糊
-- 拖放上传或点击选择图片
-- 实时预览添加后的头像效果
-- 响应式布局，移动端也能方便使用
-- 代码简洁，易于自定义与二次开发
+👉 Visit directly: <https://transflag.luoxue.cc>
 
 ---
 
-## 🚀 使用方法
+## ✨ Features
 
-### 在线使用
+- Export in original resolution, clear and not blurry
 
-1. 打开网站： <https://transflag.luoxue.cc>
-2. 点击「选择文件」或将图片拖入上传区域
-3. 右侧实时预览叠加后的效果
-4. 点击「下载处理后的头像」即可保存，分辨率保持与原图一致（如 2408×2408）
+- Drag-and-drop upload or click to select an image
 
-### 本地使用
+- Live preview of the avatar effect after applying
 
-### 本地运行
+- Responsive layout, easy to use on mobile devices
+
+- Clean code, easy to customize and for secondary development
+
+---
+
+## 🚀 How to Use
+
+### Online Usage
+
+1. Open the website: <https://transflag.luoxue.cc>
+
+2. Click "Select File" or drag an image into the upload area
+
+3. See the live preview of the overlaid effect on the right
+
+4. Click "Download Processed Avatar" to save. The resolution will be consistent with the original image (e.g., 2408×2408)
+
+### Local Usage
+
+#### Run Locally
 
 ```bash {.line-numbers}
-git clone https://github.com/luoxue3943/trans-avatar-flag-adder
+git clone [https://github.com/luoxue3943/trans-avatar-flag-adder](https://github.com/luoxue3943/trans-avatar-flag-adder)
 cd trans-avatar-flag-adder
 pnpm install
 pnpm dev
 ```
 
-然后访问 <http://localhost:3000> 🎉
-当然还是建议看下终端输出的访问地址以避免端口占用
+Then visit <http://localhost:3000> 🎉 Of course, it's recommended to check the access address output in the terminal to avoid port conflicts.
 
-## 🧭 使用提示
+## 🧭 Usage Tips
 
-- 支持常见图片格式：JPEG、PNG、WebP 等。
-- 如需调整旗帜图片可直接覆盖`public/flag.svg`文件或修改`src/app/page.tsx`的14行导入
-- 如需修改旗帜默认位置可修改`src/app/page.tsx`的216行，值是距离底部距离（默认是25px）
+- Supports common image formats: JPEG, PNG, WebP, etc.
 
----
+- To adjust the flag image, you can directly overwrite the `public/flag.svg` file or modify the import on line 14 of src/app/page.tsx
 
-## 作者
+- To modify the default position of the flag, you can edit line 216 of `src/app/page.tsx`. The value is the distance from the bottom (default is 25px)
 
-- 作者：**珞雪**
-- 网站：等等吧，万一哪天又上线了呢
+## Author
 
-> ⚠️ 声明
-> 本项目的灵感来源于 [**冰棍好烫啊**](https://github.com/bghtnya) 的作品  
-> 👉 [TransFlag_Avatar_Tool](https://github.com/bghtnya/TransFlag_Avatar_Tool)  
-> 本仓库并未使用其任何源代码或素材，属于独立实现，旨在在功能和体验上进行改进与扩展。
-> 部分设计思路参考了 X 平台用户 [@meho37371461](https://x.com/meho37371461/status/1984112244053962917) 的公开讨论。  
-> 如有侵权或不当引用，请随时联系我以便更正。
+- Author: **珞雪 (Luoxue)**
+- Website: Just wait, maybe it will be online again someday
 
-- 💬 欢迎反馈与改进建议！
+> ⚠️ Disclaimer
+> This project was inspired by the work of [**冰棍好烫啊**](https://github.com/bghtnya)
+> 👉 [TransFlag_Avatar_Tool](https://github.com/bghtnya/TransFlag_Avatar_Tool)
+> This repository does not use any of its source code or assets. It is an independent implementation aimed at improving and expanding upon the functionality and experience.
+> Some design ideas were referenced from public discussions by [@meho37371461](https://x.com/meho37371461/status/1984112244053962917).
+> If there is any infringement or improper citation, please feel free to contact me for correction.
+
+- 💬 Feedback and suggestions for improvement are welcome!
