@@ -15,11 +15,6 @@ import logo1Src from "../../public/flag.svg";
 
 /**
  * Logo 状态接口定义
- * @interface LogoState
- * @property {number} x - Logo 在画布上的 X 坐标
- * @property {number} y - Logo 在画布上的 Y 坐标
- * @property {number} width - Logo 的宽度
- * @property {number} height - Logo 的高度
  */
 interface LogoState {
   x: number;
@@ -30,11 +25,6 @@ interface LogoState {
 
 /**
  * 拖拽状态接口定义
- * @interface DragState
- * @property {boolean} isDragging - 当前是否正在拖拽
- * @property {"none" | "logo1"} target - 拖拽目标：none 表示无，logo1 表示flag
- * @property {number} offsetX - 鼠标点击位置相对于 Logo 左上角的 X 轴偏移
- * @property {number} offsetY - 鼠标点击位置相对于 Logo 左上角的 Y 轴偏移
  */
 interface DragState {
   isDragging: boolean;
@@ -42,6 +32,163 @@ interface DragState {
   offsetX: number;
   offsetY: number;
 }
+
+// ===============================================
+// GitHub 贡献者数据接口
+// ===============================================
+
+interface Contributor {
+  login: string;
+  avatar_url: string;
+  html_url: string;
+  type: string;
+}
+
+
+// ===============================================
+// 优化的贡献者和项目仓库页脚组件 (动态获取)
+// ===============================================
+
+const ContributorsFooter = () => {
+  const [contributors, setContributors] = useState<Contributor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  
+  // *** 根据您提供的 JS 代码逻辑设置的仓库 ***
+  const REPO_OWNER = 'bghtnya'; 
+  const REPO_NAME = 'TransFlag_Avatar_Tool';
+  const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/`;
+  const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contributors`;
+
+  /**
+   * 效果：在组件加载后立即调用 GitHub API
+   */
+  useEffect(() => {
+    fetch(API_URL)
+      .then(response => {
+        if (!response.ok) {
+          // 如果 API 调用失败（例如达到速率限制），返回错误
+          throw new Error(`GitHub API error: ${response.statusText}`);
+        }
+        return response.json() as Promise<Contributor[]>;
+      })
+      .then(data => {
+        // 过滤掉非用户类型的贡献者 (如 Bots)
+        const humanContributors = data.filter(c => c.type === 'User');
+        setContributors(humanContributors);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch contributors:", err);
+        setError(true);
+        setLoading(false);
+      });
+  }, []); 
+
+  /**
+   * 渲染贡献者列表的逻辑
+   */
+  const renderContributors = () => {
+    if (loading) {
+      // 骨架加载占位
+      return (
+        <ul className="flex justify-center flex-wrap gap-4 list-none p-0" aria-label="贡献者列表加载中">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <li key={i} className="flex items-center bg-gray-100 p-2 rounded-full shadow-sm animate-pulse">
+              <div className="w-7 h-7 rounded-full mr-2 bg-gray-300" />
+              <div className="h-5 w-24 bg-gray-300 rounded" />
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    if (error) {
+      return (
+        <p>
+          无法同步贡献者信息。您可以前往
+          <a
+            href={`${REPO_URL}graphs/contributors`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-green-600 font-semibold hover:underline ml-1"
+            title="查看 GitHub 贡献者图"
+          >
+            贡献者图
+          </a>
+          查看。
+        </p>
+      );
+    }
+
+    if (contributors.length === 0) {
+      return <p>暂无贡献者信息。</p>;
+    }
+    
+    return (
+      <ul className="flex justify-center flex-wrap gap-4 list-none p-0" aria-label="项目贡献者列表">
+        {contributors.slice(0, 24).map((contributor) => (
+          <li 
+            key={contributor.login}
+            className="flex items-center font-semibold bg-white p-2 rounded-full transition hover:bg-gray-50 shadow-sm"
+            aria-label={`贡献者：${contributor.login}`}
+          >
+            <img
+              // 确保头像清晰，使用 s=56 参数
+              src={`${contributor.avatar_url}?s=56`} 
+              alt={`${contributor.login}'s avatar`}
+              width={28}
+              height={28}
+              className="w-7 h-7 rounded-full mr-2 border-2 border-green-500"
+            />
+            <a
+              href={contributor.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-800 hover:text-green-600"
+              title={`前往 ${contributor.login} 的 GitHub 主页`}
+            >
+              {contributor.login}
+            </a>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+
+  return (
+    <footer className="pt-8 pb-4 text-center border-t border-gray-200 text-gray-600 bg-white">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="mb-4">
+          <p className="font-semibold text-lg mb-4 text-gray-700">
+            项目贡献者：
+          </p>
+          {renderContributors()}
+        </div>
+        <p>
+          项目仓库：
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-green-600 font-bold hover:underline ml-1 transition"
+            title="前往项目仓库"
+          >
+            {REPO_NAME}
+          </a>
+        </p>
+      </div>
+    </footer>
+  );
+};
+
+
+// ===============================================
+// 主应用组件 (App)
+// 包含所有 Canvas 和交互逻辑
+// ===============================================
+
 
 /**
  * 主应用组件
@@ -87,9 +234,6 @@ export default function App() {
 
   /**
    * 效果：组件加载时预加载flag
-   * 1. 加载 SVG 图片
-   * 2. 计算在 500x500 画布上的等比缩放尺寸
-   * 3. 设置初始位置（底部居中，向上偏移 15px）
    */
   useEffect(() => {
     const img1 = new Image();
@@ -115,16 +259,6 @@ export default function App() {
 
   /**
    * 效果：主绘制函数
-   * 职责：
-   * 1. 初始化和维护两个画布（编辑区域和预览区域）
-   * 2. 绘制用户上传的图片（居中且等比缩放）
-   * 3. 绘制flag
-   * 4. 创建圆形预览效果
-   *
-   * 触发条件：
-   * - 基础图片更改时
-   * - flag加载完成时
-   * - flag位置变化时
    */
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -195,7 +329,6 @@ export default function App() {
 
   /**
    * 处理上传的图片文件
-   * @param {File} file - 用户选择或拖拽的文件
    */
   const processFile = (file: File) => {
     if (file && file.type.startsWith("image/")) {
@@ -227,7 +360,6 @@ export default function App() {
 
   /**
    * 处理文件选择事件
-   * @param {React.ChangeEvent<HTMLInputElement>} e - 文件选择事件
    */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -237,7 +369,6 @@ export default function App() {
 
   /**
    * 处理文件拖拽到上传区域事件
-   * @param {DragEvent<HTMLDivElement>} e - 拖拽事件
    */
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -246,7 +377,6 @@ export default function App() {
 
   /**
    * 处理文件离开拖拽区域事件
-   * @param {DragEvent<HTMLDivElement>} e - 拖拽事件
    */
   const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -255,7 +385,6 @@ export default function App() {
 
   /**
    * 处理文件拖拽放置事件
-   * @param {DragEvent<HTMLDivElement>} e - 拖拽事件
    */
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -267,8 +396,6 @@ export default function App() {
 
   /**
    * 获取鼠标在 Canvas 上的实际坐标
-   * @param {MouseEvent<HTMLCanvasElement>} e - 鼠标事件
-   * @returns {{x: number, y: number}} 转换后的坐标
    */
   const getMousePos = (
     e: MouseEvent<HTMLCanvasElement>,
@@ -284,10 +411,6 @@ export default function App() {
 
   /**
    * 检查指定坐标是否在目标区域内
-   * @param {LogoState} pos - 目标区域的位置和尺寸
-   * @param {number} x - 检查的 X 坐标
-   * @param {number} y - 检查的 Y 坐标
-   * @returns {boolean} 是否命中目标区域
    */
   const isHit = (pos: LogoState, x: number, y: number) => {
     return (
@@ -300,7 +423,6 @@ export default function App() {
 
   /**
    * 处理鼠标按下事件
-   * 检查是否点击到flag，如果是则开始拖拽
    */
   const handleMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
     const { x, y } = getMousePos(e);
@@ -326,7 +448,6 @@ export default function App() {
 
   /**
    * 处理鼠标移动事件
-   * 如果正在拖拽flag，则更新其位置
    */
   const handleMouseMove = (e: MouseEvent<HTMLCanvasElement>) => {
     if (!dragState.isDragging || !canvasRef.current) return;
@@ -358,7 +479,6 @@ export default function App() {
 
   /**
    * 处理鼠标释放事件
-   * 重置拖拽状态
    */
   const handleMouseUp = () => {
     setDragState({
@@ -371,10 +491,6 @@ export default function App() {
 
   /**
    * 处理下载事件
-   * 1. 创建临时画布，使用原始图片尺寸
-   * 2. 绘制原始图片
-   * 3. 按比例绘制flag
-   * 4. 导出为 PNG 文件
    */
   const handleDownload = () => {
     if (!baseImage || originalSize.width === 0) {
@@ -414,113 +530,116 @@ export default function App() {
   };
 
   return (
-    // 修改主容器背景色为更亮的白灰色调
-    <main className="flex min-h-screen flex-col items-center p-6 md:p-12 bg-gray-100 text-gray-800">
-      {/* 新标题 */}
-      <h1 className="text-3xl md:text-4xl font-bold mb-8 text-gray-700">
-        <span className="inline md:inline">头像添加鱼板跨旗工具</span>
-        <span className="block text-center md:inline">🏳️‍⚧️🍥</span>
-      </h1>
+    <>
+      <main className="flex min-h-screen flex-col items-center p-6 md:p-12 bg-gray-100 text-gray-800">
+        {/* 新标题 */}
+        <h1 className="text-3xl md:text-4xl font-bold mb-8 text-gray-700">
+          <span className="inline md:inline">头像添加鱼板跨旗工具</span>
+          <span className="block text-center md:inline">🏳️‍⚧️🍥</span>
+        </h1>
 
-      {/* 修改卡片背景色和阴影 */}
-      <div className="w-full max-w-6xl bg-white p-4 md:p-8 rounded-lg shadow-lg">
-        <div className="flex flex-col gap-8">
-          {/* 块 1: 上传图片 */}
-          <div>
-            {/* 将隐藏的 input 放在交互区域外 */}
-            <input
-              ref={fileInputRef}
-              id="base-upload"
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-              aria-label="选择头像图片"
-            />
-            <div
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  fileInputRef.current?.click();
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label="上传图片，点击或拖拽文件到此处"
-              title="上传图片，点击或拖拽文件到此处"
-              className={`flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg cursor-pointer
+        {/* 修改卡片背景色和阴影 */}
+        <div className="w-full max-w-6xl bg-white p-4 md:p-8 rounded-lg shadow-lg">
+          <div className="flex flex-col gap-8">
+            {/* 块 1: 上传图片 */}
+            <div>
+              <input
+                ref={fileInputRef}
+                id="base-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+                aria-label="选择头像图片"
+              />
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label="上传图片，点击或拖拽文件到此处"
+                title="上传图片，点击或拖拽文件到此处"
+                className={`flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg cursor-pointer
                           ${isDraggingOver ? "border-blue-400 bg-gray-50" : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"}
                           transition-colors`}
-            >
-              <span className="px-4 py-2 bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600">
-                选择头像图片
-              </span>
-              <p className="mt-2 text-sm text-gray-500">或拖拽图片到此处</p>
-            </div>
-          </div>
-
-          {/* 块 2: 左右布局的画布区域 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* 左侧: 编辑画布 */}
-            <div>
-              <p className="mb-2 text-lg text-gray-700 text-center">
-                编辑区域（可拖拽旗帜调整位置）
-              </p>
-              <div className="w-full overflow-auto">
-                <canvas
-                  ref={canvasRef}
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
-                  className={`bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg mx-auto ${
-                    dragState.isDragging ? "cursor-grabbing" : "cursor-grab"
-                  } max-w-full`}
-                  tabIndex={0}
-                  role="img"
-                  aria-label="头像编辑画布，按住并拖动旗帜以移动位置"
-                  title="头像编辑画布，按住并拖动旗帜以移动位置"
-                >
-                  您的浏览器不支持 Canvas
-                </canvas>
+              >
+                <span className="px-4 py-2 bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600">
+                  选择头像图片
+                </span>
+                <p className="mt-2 text-sm text-gray-500">或拖拽图片到此处</p>
               </div>
             </div>
 
-            {/* 右侧: 预览画布 */}
-            <div>
-              <p className="mb-2 text-lg text-gray-700 text-center">
-                推特头像预览效果
-              </p>
-              <div className="w-full overflow-auto">
-                <canvas
-                  ref={previewCanvasRef}
-                  className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-full mx-auto max-w-full aspect-square"
-                  role="img"
-                  aria-label="预览效果"
-                  title="预览效果"
-                >
-                  您的浏览器不支持 Canvas
-                </canvas>
+            {/* 块 2: 左右布局的画布区域 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* 左侧: 编辑画布 */}
+              <div>
+                <p className="mb-2 text-lg text-gray-700 text-center">
+                  编辑区域（可拖拽旗帜调整位置）
+                </p>
+                <div className="w-full overflow-auto">
+                  <canvas
+                    ref={canvasRef}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                    className={`bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg mx-auto ${
+                      dragState.isDragging ? "cursor-grabbing" : "cursor-grab"
+                    } max-w-full`}
+                    tabIndex={0}
+                    role="img"
+                    aria-label="头像编辑画布，按住并拖动旗帜以移动位置"
+                    title="头像编辑画布，按住并拖动旗帜以移动位置"
+                  >
+                    您的浏览器不支持 Canvas
+                  </canvas>
+                </div>
+              </div>
+
+              {/* 右侧: 预览画布 */}
+              <div>
+                <p className="mb-2 text-lg text-gray-700 text-center">
+                  推特头像预览效果
+                </p>
+                <div className="w-full overflow-auto">
+                  <canvas
+                    ref={previewCanvasRef}
+                    className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-full mx-auto max-w-full aspect-square"
+                    role="img"
+                    aria-label="预览效果"
+                    title="预览效果"
+                  >
+                    您的浏览器不支持 Canvas
+                  </canvas>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* 块 4: 下载 */}
-          <div className="max-w-lg mx-auto w-full">
-            <button
-              onClick={handleDownload}
-              disabled={!baseImage}
-              className="w-full bg-green-500 text-white font-bold py-4 px-8 rounded-lg text-xl hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
-            >
-              下载合成后的头像
-            </button>
+            {/* 块 4: 下载 */}
+            <div className="max-w-lg mx-auto w-full">
+              <button
+                onClick={handleDownload}
+                disabled={!baseImage}
+                className="w-full bg-green-500 text-white font-bold py-4 px-8 rounded-lg text-xl hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:-translate-y-0.5 transition-all"
+              >
+                下载合成后的头像
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+
+      {/* 插入优化的页脚组件 (现在是动态的) */}
+      <ContributorsFooter />
+    </>
   );
 }
