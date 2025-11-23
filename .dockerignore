@@ -1,0 +1,63 @@
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+.next
+out
+build
+dist
+
+# Testing
+coverage
+.nyc_output
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Git
+.git
+.gitignore
+.github
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Documentation
+README.md
+README_zh.md
+DOCKER.md
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+LICENSE
+
+# Docker files
+Dockerfile
+Dockerfile.npm
+.dockerignore
+docker-compose.yml
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Misc
+.prettierrc
+.prettierignore
+.eslintrc.json
+eslint.config.mjs

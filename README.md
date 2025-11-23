@@ -58,6 +58,46 @@ pnpm dev
 
 Then visit <http://localhost:3000> 🎉 Of course, it's recommended to check the access address output in the terminal to avoid port conflicts.
 
+#### Docker Deployment
+
+**Using Docker Compose (Recommended)**
+
+```bash
+# Build and start the container
+docker compose up -d
+
+# View logs
+docker compose logs -f
+
+# Stop the container
+docker compose down
+```
+
+**Using Docker directly**
+
+```bash
+# Build the image
+docker build -t trans-avatar-flag-adder:latest .
+
+# Run the container
+docker run -d \
+  --name trans-avatar-flag-adder \
+  -p 3000:3000 \
+  -e NODE_ENV=production \
+  trans-avatar-flag-adder:latest
+
+# View logs
+docker logs -f trans-avatar-flag-adder
+
+# Stop and remove the container
+docker stop trans-avatar-flag-adder
+docker rm trans-avatar-flag-adder
+```
+
+Then visit <http://localhost:3000> 🎉
+
+For more detailed Docker deployment instructions, troubleshooting, and production deployment tips, see [DOCKER.md](DOCKER.md).
+
 ## 🧭 Usage Tips
 
 - Supports common image formats: JPEG, PNG, WebP, etc.

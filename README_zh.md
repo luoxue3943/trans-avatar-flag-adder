@@ -50,6 +50,46 @@ pnpm dev
 然后访问 <http://localhost:3000> 🎉
 当然还是建议看下终端输出的访问地址以避免端口占用
 
+#### Docker 部署
+
+**使用 Docker Compose（推荐）**
+
+```bash
+# 构建并启动容器
+docker compose up -d
+
+# 查看日志
+docker compose logs -f
+
+# 停止容器
+docker compose down
+```
+
+**直接使用 Docker**
+
+```bash
+# 构建镜像
+docker build -t trans-avatar-flag-adder:latest .
+
+# 运行容器
+docker run -d \
+  --name trans-avatar-flag-adder \
+  -p 3000:3000 \
+  -e NODE_ENV=production \
+  trans-avatar-flag-adder:latest
+
+# 查看日志
+docker logs -f trans-avatar-flag-adder
+
+# 停止并删除容器
+docker stop trans-avatar-flag-adder
+docker rm trans-avatar-flag-adder
+```
+
+然后访问 <http://localhost:3000> 🎉
+
+更详细的 Docker 部署说明、故障排除和生产部署建议，请参阅 [DOCKER.md](DOCKER.md)。
+
 ## 🧭 使用提示
 
 - 支持常见图片格式：JPEG、PNG、WebP 等。
